@@ -1,6 +1,6 @@
 {
     "fp16": {
-        "enabled": true,
+        "enabled": false,
         "loss_scale": 0,
         "loss_scale_window": 1000,
         "initial_scale_power": 32,
@@ -24,10 +24,10 @@
     "optimizer": {
         "type": "AdamW",
         "params": {
-            "lr": 3e-5,
-            "betas": [0.8, 0.999],
+            "lr": 5e-5,
+            "betas": [0.9, 0.999],
             "eps": 1e-8,
-            "weight_decay": 3e-7
+            "weight_decay": 0.0
         }
     },
 
@@ -35,11 +35,13 @@
         "type": "WarmupLR",
         "params": {
             "warmup_min_lr": 0,
-            "warmup_max_lr": 3e-5,
-            "warmup_num_steps": 500
+            "warmup_max_lr": 5e-5,
+            "warmup_num_steps": 0
         }
     },
 
     "steps_per_print": 2000,
-    "wall_clock_breakdown": false
+    "wall_clock_breakdown": false,
+    "train_batch_size": 64,
+    "gradient_accumulation": 1
 }
