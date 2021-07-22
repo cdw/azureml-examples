@@ -14,6 +14,7 @@ TARGET_GPU_COUNT = {
     "gpu-V100-1": 1,
     "gpu-V100-2": 2,
     "gpu-V100-4": 4,
+    "gpu-K80-4": 4,
 }
 
 
@@ -71,11 +72,16 @@ def submit_azureml_run(args: JobArguments):
 
 
 def get_azureml_environment():
-    env = Environment("deepspeed-transformers")
-    env.docker.base_image = None
-    env.docker.base_dockerfile = "dockerfile"
-    env.python.user_managed_dependencies = True
-    env.python.interpreter_path = "/opt/miniconda/bin/python"
+    ws = Workspace.from_config()
+    env_name = "deepspeed-transformers"
+    if env_name in Environment.list(ws):
+        env = Environment.get(ws, env_name)
+    else:
+        env = Environment(env_name)
+        env.docker.base_image = None
+        env.docker.base_dockerfile = "dockerfile"
+        env.python.user_managed_dependencies = True
+        env.python.interpreter_path = "/opt/miniconda/bin/python"
     return env
 
 
@@ -93,7 +99,8 @@ if __name__ == "__main__":
     target_names = [
         # "gpu-V100-1",  # single GPU
         # "gpu-V100-2",  # two GPUs
-        "gpu-V100-4",  # four GPUs
+        # "gpu-V100-4",  # four GPUs
+        "gpu-K80-4", # four K80 GPUs
     ]
 
     # https://huggingface.co/transformers/pretrained_models.html
