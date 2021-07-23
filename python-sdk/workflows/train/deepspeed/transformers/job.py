@@ -82,6 +82,7 @@ def get_azureml_environment():
         env.docker.base_dockerfile = "dockerfile"
         env.python.user_managed_dependencies = True
         env.python.interpreter_path = "/opt/miniconda/bin/python"
+        env = env.reg
     return env
 
 
