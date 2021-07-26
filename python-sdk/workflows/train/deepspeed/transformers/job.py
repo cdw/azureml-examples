@@ -14,6 +14,8 @@ TARGET_GPU_COUNT = {
     "gpu-V100-1": 1,
     "gpu-V100-2": 2,
     "gpu-V100-4": 4,
+    "gpu-K80-1": 1,
+    "gpu-K80-2": 2,
     "gpu-K80-4": 4,
 }
 
@@ -25,7 +27,7 @@ class JobArguments:
     target_name: str
     model_checkpoint: str = "distilbert-base-uncased"
     task: str = "cola"
-    node_count: int = 1
+    node_count: int = 2
     num_train_epochs: int = 3
     per_device_train_batch_size: int = 16
     per_device_eval_batch_size: int = 16
@@ -82,7 +84,8 @@ def get_azureml_environment():
         env.docker.base_dockerfile = "dockerfile"
         env.python.user_managed_dependencies = True
         env.python.interpreter_path = "/opt/miniconda/bin/python"
-        env = env.reg
+        env = env.register(ws)
+        env.build()
     return env
 
 
@@ -101,7 +104,9 @@ if __name__ == "__main__":
         # "gpu-V100-1",  # single GPU
         # "gpu-V100-2",  # two GPUs
         # "gpu-V100-4",  # four GPUs
-        "gpu-K80-4", # four K80 GPUs
+        "gpu-K80-1", # single K80 GPUs
+        # "gpu-K80-2", # two K80 GPUs
+        # "gpu-K80-4", # four K80 GPUs
     ]
 
     # https://huggingface.co/transformers/pretrained_models.html
