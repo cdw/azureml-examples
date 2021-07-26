@@ -146,100 +146,29 @@ RUN apt-get -y update && apt-get -y install --no-install-recommends \
 
 
 ##############################################################################
-# Install Deep Learning packges: tensorflow
+# Setup conda environment, cuda
 ##############################################################################
 RUN conda install -y python=$PYTHON_INSTALL_VERSION pyyaml scipy ipython cython typing mkl mkl-include setuptools
-
 RUN echo /usr/lib/x86_64-linux-gnu >> /etc/ld.so.conf.d/cuda-11-0.conf
 RUN ldconfig
     
 ##############################################################################
-# update pip
+# PyTorch, tensorboard, transformers, and supports
 ##############################################################################
-
 ## Pinning PIP b/c https://azure.github.io/azureml-sdk-for-r/articles/troubleshooting.html#training
 RUN python -m pip install --upgrade pip==20.1.1
-
-##############################################################################
-# PyTorch
-##############################################################################
-
-RUN pip install --no-cache-dir torch==1.7.0+cu110 torchvision==0.8.1+cu110 torchaudio===0.7.0 torchtext===0.8.0 -f https://download.pytorch.org/whl/torch_stable.html
-
-##############################################################################
-# Tensorflow, tensorboard, tensorboardX
-##############################################################################
-
-RUN pip install --no-cache-dir tensorflow==2.3.0 tensorboard==2.3.0 tensorboardX==2.1
-
-################################################################################################
-# Python Packages including AML-defaults, dataprep, transformers
-################################################################################################
-
-#RUN pip install --no-cache-dir --use-feature=2020-resolver \ # pip 20.1.1 doesn't have 2020 resolver
-RUN pip install --no-cache-dir \
-    psutil \
-    yappi \
-    cffi \
-    ipdb \
-    matplotlib \
-    pyyaml \
-    pyarrow \
-    graphviz \
-    astor \
-    boto3 \
-    tqdm \
-    sentencepiece \
-    msgpack \
-    requests \
-    pandas \
-    sphinx \
-    sphinx_rtd_theme \
-    scipy \
-    numpy \
-    GPUtil \
-    sklearn \
-    scikit-learn \
-    nvidia-ml-py3 \
-    h5py \
-    py3nvml \
-    mpi4py \
-    sympy \
-    transformers \
-    datasets \
-    cerberus \
-    azureml-defaults==1.17.0 \
-    azureml-telemetry==1.17.0 \
-    azureml-dataprep==2.4.2 \
-    azureml-train==1.17.0 \
-    pytorch-lightning
-
-############################################
-############################################
-
-RUN pip install --no-cache-dir \
-    html2text nltk progressbar onnxruntime \
-    git+https://github.com/NVIDIA/dllogger wget \
-    azureml-core azureml-mlflow
-
-RUN apt-get install -y iputils-ping
+COPY requirements.txt /workspace
+RUN pip install --no-cache-dir -r requirements.txt
 
 ############################################
 # Install Apex
 # https://github.com/NVIDIA/apex/issues/988
 ############################################
-
-RUN git clone https://github.com/NVIDIA/apex &&\
-    cd apex &&\
-    pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" ./
+RUN pip install -v --no-cache-dir --global-option="--cpp_ext" --global-option="--cuda_ext" \
+    git+git://github.com/NVIDIA/apex.git@0c2c6eea6556b208d1a8711197efc94899e754e1
 
 ############################################
 # Install DeepSpeed from source
 ############################################
-
-RUN git clone https://github.com/microsoft/DeepSpeed.git DeepSpeed
-RUN cd DeepSpeed && \
-  git pull && \
-  git checkout 6ba96289702afc56948aa9f6cff55d7df678ccc0 && \
-  pip install -v . && \
-  ds_report
+RUN pip install -v git+git://github.com/microsoft/DeepSpeed.git@6ba96289702afc56948aa9f6cff55d7df678ccc0
+RUN ds_report
