@@ -71,6 +71,7 @@ def submit_azureml_run(args: JobArguments):
     print(run.get_portal_url())  # link to ml.azure.com
 
     run.set_tags(asdict(args))
+    return run
 
 
 def get_azureml_environment():
@@ -143,4 +144,4 @@ if __name__ == "__main__":
                     task=task,
                 )
 
-                submit_azureml_run(args)
+                run = submit_azureml_run(args)
