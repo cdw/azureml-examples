@@ -93,6 +93,10 @@ if __name__ == "__main__":
         "time/epoch", (time.time() - start) / 60 / training_args.num_train_epochs
     )
 
+    # Save model
+    print("Saving model...")
+    trainer.save_model(training_args.output_dir)
+    
     print("Evaluation...")
 
     trainer.evaluate()
