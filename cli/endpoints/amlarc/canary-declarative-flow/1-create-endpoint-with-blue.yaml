@@ -17,20 +17,18 @@ deployments:
   #blue deployment
   - name: blue    
     model:
-      name: model-hello
+      name: model-1
       version: 1
-      local_path: ../model-1/model/helloworld.txt
+      local_path: ../model-1/model/sklearn_regression_model.pkl
     code_configuration:
       code: 
         local_path: ../model-1/onlinescoring/
       scoring_script: score.py
     environment:
-      name: env-model1
-      version: 1      
       path: .
       conda_file: file:../model-1/environment/conda.yml
       docker:
-        image: mcr.microsoft.com/azureml/intelmpi2018.3-ubuntu16.04:20210301.v1
+        image: mcr.microsoft.com/azureml/openmpi3.1.2-ubuntu18.04:20210727.v1
     scale_settings:
       scale_type: auto
       min_instances: 1
